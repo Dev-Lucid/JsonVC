@@ -15,6 +15,9 @@ class jvc
 		
 		$__jvc = array(
 			'parameters'=>array(),
+			'returns'=>array(),
+			'return_count'=>0,
+			
 			'paths'=>array(
 				'base'=>$base_dir,
 			),
@@ -22,6 +25,7 @@ class jvc
 				'title'=>'',
 				'description'=>'',
 				'keywords'=>'',
+				'author'=>'',
 				'js'=>'',
 				'prepend'=>array(),
 				'append'=>array(),
@@ -61,25 +65,25 @@ class jvc
 		
 		switch($position)
 		{
-			case 'title': case 'description': case 'keywords': case 'js':
+			case 'title': case 'description': case 'keywords': case 'js': case 'author':
 				$__jvc['response'][$position] = $content;
 				break;
 			default:
-				if(!isset($__jvc['response'][$position][$mode]))
+				if(!isset($__jvc['response'][$mode][$position]))
 				{
-					$__jvc['response'][$position][$mode] = '';
+					$__jvc['response'][$mode][$position] = '';
 				}
 				if($mode == 'prepend')
 				{
-					$__jvc['response'][$position][$mode] = $content . $__jvc[$position][$mode];
+					$__jvc['response'][$mode][$position] = $content . $__jvc[$mode][$position];
 				}
 				else if($mode == 'append')
 				{
-					$__jvc['response'][$position][$mode] .= $content;
+					$__jvc['response'][$mode][$position] .= $content;
 				}
 				else
 				{
-					$__jvc['response'][$position][$mode] = $content;
+					$__jvc['response'][$mode][$position] = $content;
 				}
 				break;
 		}
