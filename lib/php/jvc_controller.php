@@ -14,6 +14,7 @@ class jvc_controller
 	function __call($view,$p)
 	{
 		global $__jvc;
+		jvc::log('calling view '.$view);
 		
 		array_push($__jvc['parameters'],$p);
 		$view_file = $this->path.'views/'.$view.'.php';

@@ -1,1 +1,1 @@
-{"title":"","description":"","keywords":"","test":"","author":"this is a test of the escaping of ' various \"quotes\" and such's to make sure that the josn\n comes out okay","js":"","prepend":[],"append":[],"replace":[]}
+{"title":"","description":"","keywords":"","author":"this is a test of the escaping of ' various \"quotes\" and such's to make sure that the josn\n comes out okay","js":"","prepend":[],"append":[],"replace":[]}

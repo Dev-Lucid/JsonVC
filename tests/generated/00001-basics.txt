@@ -1,1 +1,1 @@
-{"title":"","description":"","keywords":"","test":"","author":"","js":"","prepend":[],"append":[],"replace":[]}
+{"title":"","description":"","keywords":"","author":"","js":"","prepend":[],"append":[],"replace":[]}

@@ -1,1 +1,1 @@
-{"title":"title testing","description":"","keywords":"","test":"","author":"","js":"","prepend":[],"append":[],"replace":[]}
+{"title":"title testing","description":"","keywords":"","author":"","js":"","prepend":[],"append":[],"replace":[]}

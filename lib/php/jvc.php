@@ -30,10 +30,21 @@ class jvc
 				'prepend'=>array(),
 				'append'=>array(),
 				'replace'=>array(),
-			)
+			),
+			
+			'log_hook'=>null,
 		);
 		
 		include_once(__DIR__.'/jvc_controller.php');
+	}
+	
+	function log($string_to_log)
+	{
+		global $__jvc;
+		if(!is_null($__jvc['log_hook']))
+		{
+			$__jvc['log_hook']('JVC: '.$string_to_log);
+		}
 	}
 	
 	public static function get_response($position)
@@ -94,6 +105,8 @@ class jvc
 		global $__jvc;
 		$class = 'jvc_controller_'.$name;
 		$path  = $__jvc['paths']['base'].'/controllers/'.$name.'/';
+		
+		jvc::log('creating controller '.$class);
 		if(!class_exists($class))
 		{
 			if(file_exists($path.$name.'.php'))

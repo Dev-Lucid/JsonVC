@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+global $__jvc;
 include_once(__DIR__.'/../lib/php/jvc.php');
 jvc::init(__DIR__.'/tests');
 global $output_path;
@@ -19,7 +20,6 @@ foreach($files as $file)
 	if(is_file($file))
 		unlink($file); 
 }
-
 
 $fail_count = 0;
 echo('Beginning test run'.$nl.' '.$nl);
