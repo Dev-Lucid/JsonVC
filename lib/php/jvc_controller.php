@@ -5,16 +5,27 @@
 
 class jvc_controller
 {
-	function init()
+	function __construct($name,$path)
 	{
+		$this->name = $name;
+		$this->path = $path;
 	}
 	
-	function deinit()
+	function __call($view,$p)
 	{
-	}
-	
-	function __call()
-	{
+		global $__jvc;
+		
+		array_push($__jvc['parameters'],$p);
+		$view_file = $this->path.'/'.$view.'.php';
+		if(file_exists($view_file))
+		{
+			include($view_file);
+		}
+		else
+		{
+			throw new Exception('JVC: Cannot find view file: '.$view_file);
+		}
+		array_shift($__jvc['parameters']);
 	}
 }
 
