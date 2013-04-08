@@ -3,8 +3,8 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-include_once(__DIR__.'/../lib/dbm.php');
-
+include_once(__DIR__.'/../lib/php/jvc.php');
+jvc::init(__DIR__.'/tests');
 global $output_path;
 $output_path = '';
 $nl = (isset($_SERVER['HTTP_HOST']))?'<br />':"\n";
@@ -27,8 +27,10 @@ echo('Beginning test run'.$nl.' '.$nl);
 $files = glob($tests.'*');
 foreach($files as $file)
 {
+	
 	if(is_file($file))
 	{
+		jvc::init(__DIR__.'/tests');
 		$name = str_replace(__DIR__.'/tests/','',str_replace('.php','',$file));
 		$output_path = $output . $name.'.txt';
 		#echo($name.$nl);

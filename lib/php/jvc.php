@@ -7,7 +7,7 @@ global $__jvc;
 
 class jvc
 {
-	public static function init($base_dir,$config_file)
+	public static function init($base_dir,$config_file='')
 	{
 		global $__jvc;
 		
@@ -33,7 +33,7 @@ class jvc
 			)
 		);
 		
-		include(__DIR__.'/jvc_controller.php');
+		include_once(__DIR__.'/jvc_controller.php');
 	}
 	
 	public static function get_response($position)
