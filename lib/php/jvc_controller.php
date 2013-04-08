@@ -5,12 +5,27 @@
 
 class jvc_controller
 {
+	/**
+	* Constructor for a controller
+	*
+	* @param name $name
+	* @param path $path
+	* @return instance of controller class
+	*/
 	function __construct($name,$path)
 	{
 		$this->name = $name;
 		$this->path = $path;
 	}
 	
+	/**
+	* Magic method used to load view files
+	*
+	* @param view $view
+	* @param p $p
+	* @return will return anything passed to the controller->view_return() function, 
+	* which can be called inside the view file.
+	*/
 	function __call($view,$p)
 	{
 		global $__jvc;
@@ -36,7 +51,12 @@ class jvc_controller
 		}
 		array_shift($__jvc['parameters']);
 	}
-		
+	
+	/**
+	* Used to return data from a view
+	*
+	* @param data $data
+	*/	
 	public function view_return($data)
 	{
 		global $__jvc;
