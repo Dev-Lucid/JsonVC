@@ -151,6 +151,8 @@ class jvc
 		global $__jvc;
 		if($do_ajax)
 		{
+			header('Content-type: text/json');
+			header('Content-type: application/json');
 			exit(json_encode($__jvc['response']));
 		}
 	}
