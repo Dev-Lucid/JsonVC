@@ -4,37 +4,52 @@
 # license that can be found in the LICENSE file.
 
 global $__jvc;
+$__jvc = array(
+	'parameters'=>array(),
+	'returns'=>array(),
+	'return_count'=>0,
+	
+	'paths'=>array(
+		'base'=>'',
+	),
+	'response'=>array(
+		'title'=>'',
+		'description'=>'',
+		'keywords'=>'',
+		'author'=>'',
+		'js'=>'',
+		'prepend'=>array(),
+		'append'=>array(),
+		'replace'=>array(),
+	),
+	
+	'log_hook'=>null,
+	
+	'base_dir'=>'',
+	'config_file'=>'',
+);
 
 class jvc
 {
-	public static function init($base_dir,$config_file='')
+	public static function init($config=array())
 	{
 		global $__jvc;
 		
+		foreach($config as $key=>$value)
+		{
+			if(is_array($value))
+			{
+				foreach($value as $subkey=>$subvalue)
+				{
+					$__jvc[$key][$subkey] = $subvalue;
+				}
+			}
+			else
+				$__jvc[$key] = $value;
+		}
+		
 		ob_start();
-		
-		$__jvc = array(
-			'parameters'=>array(),
-			'returns'=>array(),
-			'return_count'=>0,
-			
-			'paths'=>array(
-				'base'=>$base_dir,
-			),
-			'response'=>array(
-				'title'=>'',
-				'description'=>'',
-				'keywords'=>'',
-				'author'=>'',
-				'js'=>'',
-				'prepend'=>array(),
-				'append'=>array(),
-				'replace'=>array(),
-			),
-			
-			'log_hook'=>null,
-		);
-		
+
 		include_once(__DIR__.'/jvc_controller.php');
 	}
 	
@@ -106,7 +121,6 @@ class jvc
 		$class = 'jvc_controller_'.$name;
 		$path  = $__jvc['paths']['base'].'/controllers/'.$name.'/';
 		
-		jvc::log('creating controller '.$class);
 		if(!class_exists($class))
 		{
 			if(file_exists($path.$name.'.php'))
@@ -134,6 +148,8 @@ class jvc
 		{
 			$view = array_pop($url);
 			$cont = array_pop($url);
+			
+			jvc::log('processing controller->view: '.$cont.'->'.$view);
 			
 			$cont = jvc::controller($cont);
 			$cont->$view();
