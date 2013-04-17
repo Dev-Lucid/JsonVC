@@ -104,7 +104,7 @@ class jvc
 		switch($position)
 		{
 			case 'title': case 'description': case 'keywords': case 'js': case 'author':
-				$__jvc['response'][$position] = $content;
+				$__jvc['response'][$position] = (string)$content;
 				break;
 			default:
 				if(!isset($__jvc['response'][$mode][$position]))
@@ -113,15 +113,15 @@ class jvc
 				}
 				if($mode == 'prepend')
 				{
-					$__jvc['response'][$mode][$position] = $content . $__jvc[$mode][$position];
+					$__jvc['response'][$mode][$position] = (string)$content . $__jvc[$mode][$position];
 				}
 				else if($mode == 'append')
 				{
-					$__jvc['response'][$mode][$position] .= $content;
+					$__jvc['response'][$mode][$position] .= (string)$content;
 				}
 				else
 				{
-					$__jvc['response'][$mode][$position] = $content;
+					$__jvc['response'][$mode][$position] = (string)$content;
 				}
 				break;
 		}
