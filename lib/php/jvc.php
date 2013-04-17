@@ -23,7 +23,7 @@ $__jvc = array(
 		'replace'=>array(),
 	),
 	
-	'log_hook'=>null,
+	'hooks'=>array(),
 	
 	'base_dir'=>'',
 	'config_file'=>'',
@@ -31,6 +31,23 @@ $__jvc = array(
 
 class jvc
 {
+	function log($to_write)
+	{
+		global $__jvc;
+		if(isset($__jvc['hooks']['log']))
+		{
+			$to_write=(is_object($to_write) || is_array($to_write))?print_r($to_write,true):$to_write;
+			$__jvc['hooks']['log']('JVC: '.$to_write);
+		}
+	}
+	
+	function call_hook($hook,$p0=null,$p1=null,$p2=null,$p3=null,$p4=null,$p5=null,$p6=null)
+	{
+		global $__jvc;
+		if(isset($__jvc['hooks'][$hook]))
+			$__jvc['hooks'][$hook]($p0,$p1,$p2,$p3,$p4,$p5,$p6);
+	}
+	
 	public static function init($config=array())
 	{
 		global $__jvc;
@@ -41,8 +58,12 @@ class jvc
 			{
 				foreach($value as $subkey=>$subvalue)
 				{
-					$__jvc[$key][$subkey] = $subvalue;
+					if(is_numeric($subkey))
+						$__jvc[$key][] = $subvalue;
+					else
+						$__jvc[$key][$subkey] = $subvalue;
 				}
+
 			}
 			else
 				$__jvc[$key] = $value;
@@ -51,15 +72,6 @@ class jvc
 		ob_start();
 
 		include_once(__DIR__.'/jvc_controller.php');
-	}
-	
-	function log($string_to_log)
-	{
-		global $__jvc;
-		if(!is_null($__jvc['log_hook']))
-		{
-			$__jvc['log_hook']('JVC: '.$string_to_log);
-		}
 	}
 	
 	public static function get_response($position)
@@ -167,8 +179,10 @@ class jvc
 		global $__jvc;
 		if($do_ajax)
 		{
+			jvc::log('sending back json');
 			header('Content-type: text/json');
 			header('Content-type: application/json');
+			jvc::call_hook('deinit');
 			exit(json_encode($__jvc['response']));
 		}
 	}
