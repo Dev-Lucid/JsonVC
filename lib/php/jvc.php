@@ -25,6 +25,14 @@ $__jvc = array(
 	
 	'hooks'=>array(),
 	
+
+	'commands-pre-request'=>array(),
+	'commands-request'=>array(),
+	'commands-post-request'=>array(),
+	'commands-pre-page'=>array(),
+	'commands-post-page'=>array(),
+
+	
 	'base_dir'=>'',
 	'config_file'=>'',
 );
@@ -70,24 +78,38 @@ class jvc
 		}
 		
 		ob_start();
+		
+		$url  = explode('/',$_SERVER['REDIRECT_URL']);
+		if(count($url) > 1)
+		{
+			$view = array_pop($url);
+			$cont = array_pop($url);
+			
+			$__jvc['commands-request'][] = $cont.'/'.$view;
+		}
 
 		include_once(__DIR__.'/jvc_controller.php');
+		
+		jvc::log('init complete');
 	}
 	
 	public static function get_response($position)
 	{
 		global $__jvc;
-		if(is_array($__jvc['response'][$position]))
+		jvc::log('get response called for position '.$position);
+		switch($position)
 		{
-			$content = '';
-			$content .= (isset($__jvc['response'][$position]['prepend']))?$__jvc[$position]['prepend']:'';
-			$content .= (isset($__jvc['response'][$position]['replace']))?$__jvc[$position]['prepend']:'';
-			$content .= (isset($__jvc['response'][$position]['append']))?$__jvc[$position]['prepend']:'';
-			return $content;
-		}
-		else
-		{
-			return $__jvc['response'][$position];
+			case 'title': case 'description': case 'keywords': case 'js': case 'author':
+				return $__jvc['response'][$position];
+				break;
+			default:
+				#jvc::log('found a content area. compiling content');
+				$content = '';
+				$content .= (isset($__jvc['response']['prepend'][$position]))?$__jvc['response']['prepend'][$position]:'';
+				$content .= (isset($__jvc['response']['replace'][$position]))?$__jvc['response']['replace'][$position]:'';
+				$content .= (isset($__jvc['response']['append'][$position]))?$__jvc['response']['append'][$position]:'';
+				return $content;
+				break;
 		}
 	}
 	
@@ -104,7 +126,11 @@ class jvc
 		switch($position)
 		{
 			case 'title': case 'description': case 'keywords': case 'js': case 'author':
-				$__jvc['response'][$position] = (string)$content;
+				if(!isset($__jvc['response'][$position]))
+				{
+					$__jvc['response'][$position] = '';
+				}
+				$__jvc['response'][$position] .= (string)$content;
 				break;
 			default:
 				if(!isset($__jvc['response'][$mode][$position]))
@@ -113,7 +139,7 @@ class jvc
 				}
 				if($mode == 'prepend')
 				{
-					$__jvc['response'][$mode][$position] = (string)$content . $__jvc[$mode][$position];
+					$__jvc['response'][$mode][$position] = (string)$content . $__jvc['response'][$mode][$position];
 				}
 				else if($mode == 'append')
 				{
@@ -121,7 +147,7 @@ class jvc
 				}
 				else
 				{
-					$__jvc['response'][$mode][$position] = (string)$content;
+					$__jvc['response'][$mode][$position] .= (string)$content;
 				}
 				break;
 		}
@@ -130,6 +156,9 @@ class jvc
 	public static function controller($name)
 	{
 		global $__jvc;
+		jvc::log('controller instantiate: '.$name);
+		jvc::call_hook('pre-controller',$name);
+			
 		$class = 'jvc_controller_'.$name;
 		$path  = $__jvc['paths']['base'].'/controllers/'.$name.'/';
 		
@@ -149,42 +178,67 @@ class jvc
 			}
 		}
 		$controller = new $class($name,$path);
+		jvc::call_hook('post-controller',$controller);
 		return $controller;
 	}
 	
-	public static function process()
+	public static function process($command_list=null)
 	{
 		global $__jvc;
-		$url  = explode('/',$_SERVER['REDIRECT_URL']);
-		if(count($url) > 1)
+
+		if(is_null($command_list))
 		{
-			$view = array_pop($url);
-			$cont = array_pop($url);
+			jvc::process('pre-request');
+			jvc::process('request');
+			jvc::process('post-request');
 			
-			jvc::log('processing controller->view: '.$cont.'->'.$view);
-			
-			$cont = jvc::controller($cont);
-			$cont->$view();
-			 
 			if(isset($_REQUEST['ajax']) && $_REQUEST['ajax'] === 'yes')
 			{
 				jvc::deinit(true);
-				dbm::deinit();
 			}
+		}
+		else
+		{
+			foreach($__jvc['commands-'.$command_list] as $command)
+			{
+				jvc::process_command($command);
+			}
+		}
+
+	}
+	
+	public static function process_command($cont_view)
+	{
+		global $__jvc;
+		list($cont,$view) = explode('/',$cont_view);
+		if(isset($cont) && isset($view))
+		{
+			$cont = jvc::controller($cont);
+			$cont->$view();
 		}
 	}
 	
 	public static function deinit($do_ajax=false)
 	{
 		global $__jvc;
+		jvc::log('deinit called, cleaning up');
 		if($do_ajax)
 		{
 			jvc::log('sending back json');
 			header('Content-type: text/json');
 			header('Content-type: application/json');
 			jvc::call_hook('deinit');
-			exit(json_encode($__jvc['response']));
+		
+			try
+			{
+				exit(json_encode($__jvc['response']));
+			}
+			catch(Exception $e)
+			{
+				jvc::log(print_r(error_get_last(),true));
+			}
 		}
+		jvc::call_hook('deinit');
 	}
 }
 
