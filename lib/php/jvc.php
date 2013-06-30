@@ -185,7 +185,7 @@ class jvc
 	public static function process($command_list=null)
 	{
 		global $__jvc;
-
+		
 		if(is_null($command_list))
 		{
 			jvc::process('pre-request');
