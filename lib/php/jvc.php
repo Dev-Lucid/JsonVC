@@ -79,6 +79,9 @@ class jvc
 		
 		ob_start();
 		
+		# check for controller commands either in the redirect url
+		# or in the _escaped_fragment_ get var
+		
 		$url  = explode('/',$_SERVER['REDIRECT_URL']);
 		if(count($url) > 1)
 		{
@@ -86,6 +89,22 @@ class jvc
 			$cont = array_pop($url);
 			
 			$__jvc['commands-request'][] = $cont.'/'.$view;
+		}
+		
+		if(isset($_REQUEST['_escaped_fragment_']))
+		{
+			$parts = explode('--',$_REQUEST['_escaped_fragment_']);
+			
+			# determine controller
+			$parts[0] = explode('-',$parts[0]);
+			$__jvc['commands-request'][] = $parts[0][0].'/'.$parts[0][1];
+			
+			# determine request parameters
+			$parts[1] = explode('|',$parts[0]);
+			for($i=0;$i<count($parts[1]);$i++)
+			{
+				$_REQUEST[$parts[1][$i]] = $parts[1][$i+1];
+			}
 		}
 
 		include_once(__DIR__.'/jvc_controller.php');
@@ -203,6 +222,12 @@ class jvc
 			{
 				jvc::process_command($command);
 			}
+		}
+		
+		if(isset($_REQUEST['_escaped_fragment_']))
+		{
+			print_r($__jvc['response']);
+			exit();
 		}
 
 	}
