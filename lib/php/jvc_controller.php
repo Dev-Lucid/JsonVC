@@ -52,6 +52,12 @@ class jvc_controller
 		array_shift($__jvc['parameters']);
 	}
 	
+	function parameters()
+	{
+		global $__jvc;
+		return array_pop($__jvc['parameters']);
+	}
+	
 	/**
 	* Used to return data from a view
 	*

@@ -232,14 +232,14 @@ class jvc
 
 	}
 	
-	public static function process_command($cont_view)
+	public static function process_command($cont_view,$p0=null,$p1=null,$p2=null,$p3=null,$p4=null,$p5=null)
 	{
 		global $__jvc;
 		list($cont,$view) = explode('/',$cont_view);
 		if(isset($cont) && isset($view))
 		{
 			$cont = jvc::controller($cont);
-			$cont->$view();
+			$cont->$view($p0,$p1,$p2,$p3,$p4,$p5);
 		}
 	}
 	
