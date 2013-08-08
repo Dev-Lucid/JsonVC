@@ -265,6 +265,14 @@ class jvc
 		}
 		jvc::call_hook('deinit');
 	}
+	
+		
+	public static function get_reset_buffer()
+	{
+		$to_return = ob_get_clean();
+		ob_start();
+		return $to_return;
+	}
 }
 
 ?>
