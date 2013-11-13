@@ -21,6 +21,9 @@ $__jvc = array(
 		'prepend'=>array(),
 		'append'=>array(),
 		'replace'=>array(),
+		'options'=>array(
+			'scroll_top'=>'yes',
+		)
 	),
 	
 	'hooks'=>array(),
@@ -264,6 +267,12 @@ class jvc
 			}
 		}
 		jvc::call_hook('deinit');
+	}
+	
+	public static function option($opt_name,$opt_value)
+	{
+		global $__jvc;
+		$__jvc['response']['options'][$opt_name] = $opt_value;
 	}
 	
 		
